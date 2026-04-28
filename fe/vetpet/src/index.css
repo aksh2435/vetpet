@@ -1,26 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
 @import "tailwindcss";
 
+/* ── Brand Palette ───────────────────────────────────────────
+   Deep Teal   #264653  — dark backgrounds / base
+   Forest Green #2A9D8F — primary brand & actions
+   Coral Red   #E76F51  — sparingly, attention only
+   Text light  #FFFFFF  — on dark backgrounds
+   Text dark   #264653  — on light backgrounds
+──────────────────────────────────────────────────────────── */
+
 @theme {
-  --color-primary-50: #f0fdf4;
-  --color-primary-100: #dcfce7;
-  --color-primary-200: #bbf7d0;
-  --color-primary-500: #10b981;
-  --color-primary-600: #059669;
-  --color-primary-700: #047857;
-  --color-accent-400: #fbbf24;
-  --color-accent-500: #f59e0b;
-  --color-accent-600: #d97706;
-  --color-soft-100: #fefce8;
-  --color-soft-200: #fef9c3;
+  /* Deep Teal */
+  --color-teal-900: #1a3340;
+  --color-teal-800: #1e3d4d;
+  --color-teal-700: #264653;
+  --color-teal-600: #2d5566;
+  --color-teal-500: #346478;
+  --color-teal-100: #e8f4f7;
+  --color-teal-50:  #f0f8fa;
+
+  /* Forest Green */
+  --color-primary-900: #1a6b62;
+  --color-primary-700: #21867b;
+  --color-primary-600: #259188;
+  --color-primary-500: #2A9D8F;
+  --color-primary-400: #3db8a9;
+  --color-primary-200: #a8e6e0;
+  --color-primary-100: #d4f3f0;
+  --color-primary-50:  #edfaf8;
+
+  /* Coral Red */
+  --color-coral-600: #c4562e;
+  --color-coral-500: #E76F51;
+  --color-coral-400: #ec8b72;
+  --color-coral-100: #fde8e1;
+  --color-coral-50:  #fef4f0;
+
   --font-family-sans: 'Inter', system-ui, sans-serif;
   --radius-4xl: 2rem;
 }
 
 @layer base {
   body {
-    background-color: #fffbeb;
-    color: #1f2937;
+    background-color: #f0f8fa;
+    color: #264653;
     font-family: 'Inter', system-ui, sans-serif;
     line-height: 1.6;
   }
@@ -30,26 +53,30 @@
   .card {
     background: white;
     border-radius: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+    box-shadow: 0 4px 16px -4px rgba(38,70,83,0.08);
     padding: 1.5rem;
-    border: 1px solid #f3f4f6;
+    border: 1px solid #e8f4f7;
   }
+
+  /* Forest Green primary button */
   .btn-primary {
-    background-color: #10b981;
-    color: white;
+    background-color: #2A9D8F;
+    color: #ffffff;
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: 9999px;
     transition: all 0.2s;
-    box-shadow: 0 4px 6px -1px rgb(16 185 129 / 0.3);
+    box-shadow: 0 4px 12px rgba(42,157,143,0.35);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
   }
-  .btn-primary:hover { background-color: #059669; }
+  .btn-primary:hover { background-color: #259188; transform: translateY(-1px); }
+
+  /* Outline variant */
   .btn-outline {
-    border: 2px solid #10b981;
-    color: #059669;
+    border: 2px solid #2A9D8F;
+    color: #2A9D8F;
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: 9999px;
@@ -58,7 +85,8 @@
     align-items: center;
     gap: 0.5rem;
   }
-  .btn-outline:hover { background-color: #f0fdf4; }
+  .btn-outline:hover { background-color: #edfaf8; }
+
   .badge {
     display: inline-flex;
     align-items: center;
@@ -70,14 +98,21 @@
 }
 
 @layer utilities {
+  /* Hero gradient — teal base */
   .gradient-hero {
-    background: linear-gradient(135deg, #f0fdf4 0%, #fefce8 50%, #fff7ed 100%);
+    background: linear-gradient(135deg, #f0f8fa 0%, #edfaf8 60%, #fef4f0 100%);
   }
+  /* Dark teal section */
+  .gradient-dark {
+    background: linear-gradient(135deg, #264653 0%, #1e3d4d 100%);
+  }
+  /* Forest green CTA */
   .gradient-card {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, #2A9D8F 0%, #21867b 100%);
   }
+  /* Text gradient */
   .text-gradient {
-    background: linear-gradient(135deg, #10b981, #f59e0b);
+    background: linear-gradient(135deg, #2A9D8F, #264653);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -93,5 +128,5 @@
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #10b981; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #e8f4f7; }
+::-webkit-scrollbar-thumb { background: #2A9D8F; border-radius: 3px; }

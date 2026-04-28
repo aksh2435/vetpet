@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Star, Clock, Phone, MessageCircle, Calendar, Filter } from 'lucide-react'
+import { MapPin, Star, Phone, MessageCircle, Calendar, Stethoscope, Clock, ChevronRight, ShieldCheck } from 'lucide-react'
 import { mockDoctors } from '../data/mockData'
 import { useAuthStore } from '../stores/authStore'
 import { useAppointmentStore } from '../stores/appointmentStore'
@@ -11,49 +11,61 @@ import { useChatStore } from '../stores/chatStore'
 import Button from '../components/ui/Button'
 import Modal from '../components/ui/Modal'
 import Input, { Select } from '../components/ui/Input'
-import Badge from '../components/ui/Badge'
 import { useNavigate } from 'react-router-dom'
 
 const specializations = ['All', 'General', 'Surgery', 'Dermatology', 'Orthopedics', 'Dentistry', 'Ophthalmology', 'Cardiology']
 
-// Simple SVG map placeholder (no API key needed)
 function MapView({ doctors, selected, onSelect }) {
+  const positions = [
+    { top: '30%', left: '45%' }, { top: '20%', left: '60%' }, { top: '55%', left: '35%' },
+    { top: '40%', left: '70%' }, { top: '65%', left: '55%' }, { top: '25%', left: '30%' },
+    { top: '50%', left: '20%' }, { top: '70%', left: '75%' },
+  ]
   return (
-    <div className="relative bg-gradient-to-br from-green-50 to-emerald-100 rounded-3xl overflow-hidden h-80 border border-primary-200">
-      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800)', backgroundSize: 'cover' }} />
-      <div className="absolute inset-0 bg-primary-500/10" />
-      <div className="absolute top-4 left-4 bg-white rounded-2xl px-3 py-2 shadow-md text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <MapPin size={14} className="text-primary-500" /> Ahmedabad, Gujarat
+    <div className="relative rounded-3xl overflow-hidden h-72 border border-teal-100"
+      style={{ background: 'linear-gradient(135deg, #1e3d4d 0%, #264653 60%, #2d5566 100%)' }}>
+      {/* Grid overlay */}
+      <div className="absolute inset-0 opacity-10"
+        style={{ backgroundImage: 'linear-gradient(rgba(42,157,143,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(42,157,143,0.5) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+      {/* Location badge */}
+      <div className="absolute top-4 left-4 bg-white/10 backdrop-blur border border-white/20 rounded-2xl px-3 py-2 text-sm font-semibold text-white flex items-center gap-2">
+        <MapPin size={14} className="text-primary-400" /> Ahmedabad, Gujarat
       </div>
-      {/* Simulated map pins */}
+      {/* Map pins */}
       {doctors.map((doc, i) => {
-        const positions = [
-          { top: '30%', left: '45%' }, { top: '20%', left: '60%' }, { top: '55%', left: '35%' },
-          { top: '40%', left: '70%' }, { top: '65%', left: '55%' }, { top: '25%', left: '30%' },
-          { top: '50%', left: '20%' }, { top: '70%', left: '75%' },
-        ]
         const pos = positions[i] || { top: '50%', left: '50%' }
+        const isSelected = selected?.id === doc.id
         return (
           <motion.button
             key={doc.id}
-            style={{ position: 'absolute', ...pos, transform: 'translate(-50%, -50%)' }}
+            style={{ position: 'absolute', ...pos, transform: 'translate(-50%,-50%)' }}
             whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => onSelect(doc)}
-            className={`flex flex-col items-center ${selected?.id === doc.id ? 'z-10' : ''}`}
+            className="flex flex-col items-center"
           >
-            <div className={`w-10 h-10 rounded-full border-3 shadow-lg flex items-center justify-center text-white text-xs font-bold ${selected?.id === doc.id ? 'bg-accent-500 border-white scale-125' : 'bg-primary-500 border-white'}`}>
-              {doc.available ? '🏥' : '🔴'}
+            <div className={`w-10 h-10 rounded-full border-2 shadow-lg flex items-center justify-center font-bold text-xs transition-all
+              ${isSelected
+                ? 'bg-coral-500 border-white text-white scale-125 shadow-coral-500/40'
+                : doc.available
+                  ? 'bg-primary-500 border-white/80 text-white'
+                  : 'bg-teal-600 border-white/50 text-white/70'
+              }`}>
+              <Stethoscope size={14} />
             </div>
-            {selected?.id === doc.id && (
-              <div className="bg-white rounded-xl shadow-xl px-2 py-1 mt-1 text-xs font-semibold text-gray-800 whitespace-nowrap">
+            {isSelected && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-xl shadow-xl px-2 py-1 mt-1 text-xs font-semibold text-teal-700 whitespace-nowrap"
+              >
                 {doc.name.split(' ').slice(-1)[0]}
-              </div>
+              </motion.div>
             )}
           </motion.button>
         )
       })}
-      <div className="absolute bottom-4 right-4 text-xs text-gray-500 bg-white/80 rounded-xl px-2 py-1">
-        🗺️ Interactive Map (Replace with Google Maps API)
+      <div className="absolute bottom-3 right-3 text-xs text-white/40 bg-black/20 rounded-lg px-2 py-1">
+        Simulated Map
       </div>
     </div>
   )
@@ -72,7 +84,6 @@ export default function NearbyVets() {
   const { setActiveChat } = useChatStore()
   const navigate = useNavigate()
   const pets = getUserPets(user?.id)
-
   const filtered = filter === 'All' ? mockDoctors : mockDoctors.filter((d) => d.specialization === filter)
 
   const handleBook = (e) => {
@@ -82,7 +93,7 @@ export default function NearbyVets() {
     addAppointment({ doctorId: selected.id, doctorName: selected.name, clinic: selected.clinic, petId: aptForm.petId, petName: pet?.name, ownerId: user?.id, ownerName: user?.name, ...aptForm, fee: selected.fee })
     addNotification({ title: 'Appointment Requested', message: `Request sent to ${selected.name}`, type: 'appointment' })
     setAptModal(false)
-    toast('Appointment requested! 📅', 'success')
+    toast('Appointment requested!', 'success')
     navigate('/appointments')
   }
 
@@ -93,92 +104,152 @@ export default function NearbyVets() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Nearby Vets 🗺️</h1>
-          <p className="text-gray-500 mt-1">Find trusted veterinarians near Ahmedabad</p>
+    <div className="min-h-screen" style={{ background: '#f0f8fa' }}>
+      {/* Page header — deep teal */}
+      <div style={{ background: 'linear-gradient(135deg, #264653 0%, #1e3d4d 100%)' }} className="px-4 py-10">
+        <div className="max-w-7xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="flex items-center gap-2 text-primary-400 text-sm font-semibold mb-2">
+              <ShieldCheck size={15} /> Verified Veterinary Professionals
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+              Find Nearby Vets
+            </h1>
+            <p className="text-white/60">Trusted veterinarians near Ahmedabad — book instantly</p>
+          </motion.div>
         </div>
+      </div>
 
-        {/* Map */}
-        <div className="mb-8">
-          <MapView doctors={filtered} selected={selected} onSelect={setSelected} />
-        </div>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
 
-        {/* Filters */}
-        <div className="flex gap-2 flex-wrap mb-6">
-          {specializations.map((s) => (
-            <button key={s} onClick={() => setFilter(s)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${filter === s ? 'bg-primary-500 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300'}`}>
-              {s}
-            </button>
-          ))}
-        </div>
+          {/* Map */}
+          <div className="mb-8">
+            <MapView doctors={filtered} selected={selected} onSelect={setSelected} />
+          </div>
 
-        {/* Selected vet card */}
-        <AnimatePresence>
-          {selected && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="card p-6 mb-6 border-2 border-primary-200 bg-primary-50/30">
-              <div className="flex flex-col sm:flex-row gap-4 items-start">
-                <img src={selected.image} alt={selected.name} className="w-20 h-20 rounded-2xl object-cover" />
-                <div className="flex-1">
-                  <div className="flex items-start justify-between flex-wrap gap-2">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">{selected.name}</h3>
-                      <p className="text-gray-500">{selected.clinic}</p>
-                      <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
-                        <span className="flex items-center gap-1"><Star size={14} className="text-yellow-400 fill-yellow-400" />{selected.rating} ({selected.reviews})</span>
-                        <span className="flex items-center gap-1"><MapPin size={14} />{selected.address}</span>
+          {/* Filters */}
+          <div className="flex gap-2 flex-wrap mb-6">
+            {specializations.map((s) => (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
+                  filter === s
+                    ? 'text-white border-transparent shadow-md'
+                    : 'bg-white text-teal-700 border-teal-100 hover:border-primary-300 hover:text-primary-600'
+                }`}
+                style={filter === s ? { background: '#2A9D8F' } : {}}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+
+          {/* Selected vet highlight */}
+          <AnimatePresence>
+            {selected && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                className="rounded-3xl p-6 mb-6 border"
+                style={{ background: 'linear-gradient(135deg, #264653, #1e3d4d)', borderColor: '#2A9D8F' }}
+              >
+                <div className="flex flex-col sm:flex-row gap-5 items-start">
+                  <img src={selected.image} alt={selected.name} className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary-500/40" />
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between flex-wrap gap-2">
+                      <div>
+                        <h3 className="text-xl font-bold text-white">{selected.name}</h3>
+                        <p className="text-white/60 text-sm">{selected.clinic}</p>
+                        <div className="flex items-center gap-4 mt-2 text-sm text-white/50">
+                          <span className="flex items-center gap-1">
+                            <Star size={13} className="text-yellow-400 fill-yellow-400" />
+                            {selected.rating} ({selected.reviews})
+                          </span>
+                          <span className="flex items-center gap-1"><MapPin size={13} />{selected.address}</span>
+                          <span className="flex items-center gap-1"><Clock size={13} />9AM–6PM</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${selected.available ? 'bg-primary-500/20 text-primary-400' : 'bg-coral-500/20 text-coral-400'}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${selected.available ? 'bg-primary-400' : 'bg-coral-400'}`} />
+                          {selected.available ? 'Available' : 'Busy'}
+                        </span>
+                        <div className="text-2xl font-bold text-primary-400 mt-2">₹{selected.fee}</div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <Badge color={selected.available ? 'green' : 'red'}>{selected.available ? '● Available' : '● Busy'}</Badge>
-                      <div className="text-lg font-bold text-primary-600 mt-1">₹{selected.fee}</div>
+                    <div className="flex gap-3 mt-4 flex-wrap">
+                      <button
+                        onClick={() => setAptModal(true)}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90"
+                        style={{ background: '#2A9D8F' }}
+                      >
+                        <Calendar size={15} /> Book Appointment
+                      </button>
+                      <button
+                        onClick={() => handleChat(selected)}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border border-white/20 text-white hover:bg-white/10 transition-all"
+                      >
+                        <MessageCircle size={15} /> Chat
+                      </button>
+                      <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border border-white/10 text-white/60 hover:bg-white/5 transition-all">
+                        <Phone size={15} /> {selected.phone}
+                      </button>
                     </div>
                   </div>
-                  <div className="flex gap-3 mt-4 flex-wrap">
-                    <Button size="sm" onClick={() => { setAptModal(true) }}><Calendar size={14} /> Book Appointment</Button>
-                    <Button size="sm" variant="outline" onClick={() => handleChat(selected)}><MessageCircle size={14} /> Chat</Button>
-                    <Button size="sm" variant="ghost"><Phone size={14} /> {selected.phone}</Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Vet grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filtered.map((doc, i) => (
+              <motion.div
+                key={doc.id}
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                whileHover={{ y: -4 }}
+                onClick={() => setSelected(doc)}
+                className={`bg-white rounded-2xl p-4 cursor-pointer transition-all border ${
+                  selected?.id === doc.id
+                    ? 'border-primary-400 shadow-lg shadow-primary-100'
+                    : 'border-teal-100 hover:shadow-md hover:border-primary-200'
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <img src={doc.image} alt={doc.name} className="w-12 h-12 rounded-2xl object-cover" />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-teal-700 text-sm truncate">{doc.name}</h4>
+                    <p className="text-xs text-teal-500/70 truncate">{doc.clinic}</p>
                   </div>
+                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${doc.available ? 'bg-primary-500' : 'bg-coral-500'}`} />
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Vet list */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((doc, i) => (
-            <motion.div key={doc.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} whileHover={{ y: -4 }}
-              onClick={() => setSelected(doc)}
-              className={`card p-4 cursor-pointer transition-all ${selected?.id === doc.id ? 'border-2 border-primary-400 bg-primary-50/30' : 'hover:shadow-lg'}`}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <img src={doc.image} alt={doc.name} className="w-12 h-12 rounded-2xl object-cover" />
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-gray-900 text-sm truncate">{doc.name}</h4>
-                  <p className="text-xs text-gray-500 truncate">{doc.clinic}</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-1 text-teal-600">
+                    <Star size={11} className="text-yellow-400 fill-yellow-400" />{doc.rating}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-50 text-primary-600">{doc.specialization}</span>
+                  <span className="font-bold text-primary-600">₹{doc.fee}</span>
                 </div>
-                <div className={`w-2.5 h-2.5 rounded-full ${doc.available ? 'bg-primary-500' : 'bg-red-400'}`} />
-              </div>
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span className="flex items-center gap-1"><Star size={11} className="text-yellow-400 fill-yellow-400" />{doc.rating}</span>
-                <Badge color="blue">{doc.specialization}</Badge>
-                <span className="font-semibold text-primary-600">₹{doc.fee}</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+                {selected?.id === doc.id && (
+                  <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-primary-600">
+                    View details <ChevronRight size={12} />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
 
-      {/* Book Appointment Modal */}
+      {/* Book Modal */}
       <Modal isOpen={aptModal} onClose={() => setAptModal(false)} title={`Book with ${selected?.name}`}>
         <form onSubmit={handleBook} className="space-y-4">
-          <div className="flex items-center gap-3 bg-primary-50 rounded-2xl p-3">
+          <div className="flex items-center gap-3 rounded-2xl p-3" style={{ background: '#edfaf8' }}>
             <img src={selected?.image} alt="" className="w-12 h-12 rounded-xl object-cover" />
             <div>
-              <div className="font-semibold text-gray-800">{selected?.name}</div>
-              <div className="text-sm text-gray-500">{selected?.clinic} • ₹{selected?.fee}</div>
+              <div className="font-semibold text-teal-700">{selected?.name}</div>
+              <div className="text-sm text-teal-500">{selected?.clinic} · ₹{selected?.fee}</div>
             </div>
           </div>
           <Select label="Select Pet" value={aptForm.petId} onChange={(e) => setAptForm((f) => ({ ...f, petId: e.target.value }))}>
@@ -190,7 +261,10 @@ export default function NearbyVets() {
             {['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'].map((t) => <option key={t}>{t}</option>)}
           </Select>
           <Input label="Reason for Visit" placeholder="Annual checkup, vaccination..." value={aptForm.reason} onChange={(e) => setAptForm((f) => ({ ...f, reason: e.target.value }))} />
-          <Button type="submit" className="w-full">Confirm Booking 📅</Button>
+          <button type="submit" className="w-full flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: '#2A9D8F' }}>
+            <Calendar size={16} /> Confirm Booking
+          </button>
         </form>
       </Modal>
     </div>

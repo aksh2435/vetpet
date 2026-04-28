@@ -1,22 +1,33 @@
-# Node
-node_modules/
-dist/
-.DS_Store
-
 # Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.venv/
-env/
-venv/
+be/venv/
+be/__pycache__/
+be/*.pyc
+be/*.db
+be/.env
+
+# Node
+fe/vetpet/node_modules/
+fe/vetpet/dist/
+fe/client/node_modules/
+fe/client/dist/
+fe/server/node_modules/
+vetpet/client/node_modules/
+vetpet/server/node_modules/
+
+# Env files
 .env
+.env.local
+.env.production
 
-# Database
-*.db
-*.sqlite3
-
-# IDE
+# Editor
 .vscode/
 .idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

@@ -15,7 +15,6 @@ import DoctorRegister from './pages/DoctorRegister'
 import NearbyVets from './pages/NearbyVets'
 import Appointments from './pages/Appointments'
 import DoctorDashboard from './pages/DoctorDashboard'
-import Store from './pages/Store'
 import LostFound from './pages/LostFound'
 import Symptoms from './pages/Symptoms'
 import PetDating from './pages/PetDating'
@@ -32,22 +31,16 @@ export default function App() {
   const { addNotification } = useNotificationStore()
   const { isAuthenticated } = useAuthStore()
 
-  // Simulate real-time notifications
   useEffect(() => {
     if (!isAuthenticated) return
     const messages = [
       { title: 'Reminder', message: "Don't forget Buddy's vaccination next week!", type: 'reminder' },
       { title: 'New Vet Available', message: 'Dr. Kavya Nair is now available for appointments.', type: 'info' },
-      { title: 'Store Sale', message: '20% off on all pet food today only! 🛒', type: 'info' },
     ]
     let idx = 0
     const interval = setInterval(() => {
-      if (idx < messages.length) {
-        addNotification(messages[idx])
-        idx++
-      } else {
-        clearInterval(interval)
-      }
+      if (idx < messages.length) { addNotification(messages[idx]); idx++ }
+      else clearInterval(interval)
     }, 15000)
     return () => clearInterval(interval)
   }, [isAuthenticated])
@@ -66,7 +59,6 @@ export default function App() {
           <Route path="/nearby-vets" element={<ProtectedRoute><NearbyVets /></ProtectedRoute>} />
           <Route path="/appointments" element={<ProtectedRoute><Appointments /></ProtectedRoute>} />
           <Route path="/doctor-dashboard" element={<ProtectedRoute doctorOnly><DoctorDashboard /></ProtectedRoute>} />
-          <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
           <Route path="/lost-found" element={<ProtectedRoute><LostFound /></ProtectedRoute>} />
           <Route path="/symptoms" element={<ProtectedRoute><Symptoms /></ProtectedRoute>} />
           <Route path="/dating" element={<ProtectedRoute><PetDating /></ProtectedRoute>} />
